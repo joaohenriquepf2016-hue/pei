@@ -382,11 +382,6 @@ body::after {
 </div>
 
 <script>
-function loadTeachers() {
-  try {
-    return JSON.parse(localStorage.getItem('pei_teachers') || '[]');
-  } catch(e) { return []; }
-}
 
 function render() {
   const teachers = loadTeachers();
