@@ -385,14 +385,6 @@ body::after {
 
 async function loadTeachers(){
 
-}
-
-async function render(){
-
-    const teachers = await loadTeachers();
-
-}
-
     const snapshot = await get(ref(db,"teachers"));
 
     if(snapshot.exists()){
