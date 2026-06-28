@@ -383,9 +383,15 @@ body::after {
 
 <script>
 
-async function render() {
-  async function loadTeachers(){
-  const teachers = await loadTeachers();
+async function loadTeachers(){
+
+}
+
+async function render(){
+
+    const teachers = await loadTeachers();
+
+}
 
     const snapshot = await get(ref(db,"teachers"));
 
