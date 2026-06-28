@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PEI — Plano Educacional Individualizado</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+/* === RESET & VARIABLES === */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --navy-900: #0a1628; --navy-800: #0f2140; --navy-700: #142d58;
+  --blue-600: #1a56db; --blue-500: #2563eb; --blue-400: #3b82f6;
+  --blue-300: #60a5fa; --blue-200: #93c5fd; --sky-400: #38bdf8;
+  --white: #ffffff;
+  --glass: rgba(255,255,255,0.06); --glass-border: rgba(255,255,255,0.1);
+  --glass-hover: rgba(255,255,255,0.1);
+  --text-primary: #f1f5f9; --text-secondary: #94a3b8; --text-muted: #64748b;
+  --radius: 16px; --radius-sm: 10px;
+  --yellow-400: #fbbf24; --yellow-300: #fcd34d;
+  --red-400: #f87171;
+}
+/* === BASE === */
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--navy-900);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+body::before {
+  content: '';
+  position: fixed; top: -40%; left: -20%;
+  width: 80vw; height: 80vw;
+  background: radial-gradient(circle, rgba(37,99,235,0.12) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
+}
+body::after {
+  content: '';
+  position: fixed; bottom: -30%; right: -15%;
+  width: 70vw; height: 70vw;
+  background: radial-gradient(circle, rgba(56,189,248,0.08) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
+}
+.app { position: relative; z-index: 1; }
+
+/* === NAVBAR === */
+.navbar {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(10,22,40,0.7);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--glass-border);
+  padding: 0 24px;
+  animation: fadeDown 0.5s ease;
+}
+.navbar-inner {
+  max-width: 900px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 60px;
+}
+.navbar-brand {
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none; color: var(--text-primary);
+}
+.navbar-brand .brand-icon {
+  width: 34px; height: 34px; border-radius: 9px;
+  background: linear-gradient(135deg, var(--blue-600), var(--blue-400));
+  display: grid; place-items: center;
+  box-shadow: 0 2px 10px rgba(37,99,235,0.3);
+}
+.navbar-brand .brand-icon svg { width: 18px; height: 18px; color: white; }
+.navbar-brand span {
+  font-family: 'Outfit', sans-serif; font-weight: 700;
+  font-size: 1rem; letter-spacing: -0.3px;
+}
+.navbar-menu { display: flex; align-items: center; gap: 4px; }
+.nav-link {
+  display: flex; align-items: center; gap: 7px;
+  padding: 8px 16px; border-radius: 8px;
+  text-decoration: none; font-size: 0.84rem; font-weight: 500;
+  color: var(--text-secondary); transition: all 0.2s;
+  border: 1px solid transparent; cursor: pointer;
+}
+.nav-link:hover {
+  background: var(--glass); color: var(--text-primary);
+  border-color: var(--glass-border);
+}
+.nav-link.active {
+  background: rgba(37,99,235,0.12); color: var(--blue-300);
+  border-color: rgba(59,130,246,0.2);
+}
+.nav-link svg { width: 16px; height: 16px; }
+.nav-link.admin-link {
+  background: rgba(234,179,8,0.08);
+  border-color: rgba(234,179,8,0.15); color: #fbbf24;
+}
+.nav-link.admin-link:hover {
+  background: rgba(234,179,8,0.15); color: #fcd34d;
+}
+.nav-link.admin-link.active {
+  background: rgba(234,179,8,0.18);
+  border-color: rgba(234,179,8,0.3);
+  color: #fcd34d;
+}
+
+/* === PAGES (show/hide) === */
+.page { display: none; }
+.page.active { display: block; }
+
+/* === HOME PAGE === */
+.header {
+  padding: 44px 24px 32px; text-align: center; position: relative;
+}
+.header::after {
+  content: ''; position: absolute; bottom: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 120px; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--blue-400), transparent);
+}
+.header h1 {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 800;
+  letter-spacing: -0.5px; line-height: 1.15;
+  background: linear-gradient(135deg, var(--white) 0%, var(--blue-200) 50%, var(--sky-400) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: fadeDown 0.6s ease 0.1s both;
+}
+.header p {
+  margin-top: 12px; color: var(--text-secondary);
+  font-size: 0.95rem; max-width: 520px;
+  margin-left: auto; margin-right: auto; line-height: 1.6;
+  animation: fadeDown 0.6s ease 0.2s both;
+}
+.container { max-width: 900px; margin: 0 auto; padding: 36px 20px 60px; }
+.section { margin-bottom: 44px; animation: fadeUp 0.5s ease 0.15s both; }
+.section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 18px; flex-wrap: wrap; gap: 10px;
+}
+.section-title {
+  display: flex; align-items: center; gap: 12px;
+  font-family: 'Outfit', sans-serif; font-size: 1.15rem;
+  font-weight: 600; color: var(--text-primary);
+}
+.section-title .icon-circle {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: grid; place-items: center;
+  background: linear-gradient(135deg, var(--blue-600), var(--blue-400));
+  box-shadow: 0 2px 12px rgba(37,99,235,0.35);
+}
+.section-title .icon-circle svg { width: 18px; height: 18px; color: white; }
+.count-badge {
+  background: rgba(37,99,235,0.15); border: 1px solid rgba(59,130,246,0.2);
+  color: var(--blue-300); font-size: 0.72rem; font-weight: 600;
+  padding: 3px 10px; border-radius: 100px;
+}
+.glass-card {
+  background: var(--glass); border: 1px solid var(--glass-border);
+  border-radius: var(--radius); padding: 24px;
+  backdrop-filter: blur(20px); transition: border-color 0.3s;
+}
+.glass-card:hover { border-color: rgba(255,255,255,0.15); }
+.teacher-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 18px;
+}
+.teacher-card-view {
+  background: var(--glass); border: 1px solid var(--glass-border);
+  border-radius: var(--radius); padding: 24px 16px 20px;
+  text-align: center; transition: all 0.3s ease;
+  text-decoration: none; display: block;
+}
+.teacher-card-view:hover {
+  border-color: var(--blue-400); transform: translateY(-4px);
+  box-shadow: 0 12px 36px rgba(37,99,235,0.2);
+  background: var(--glass-hover);
+}
+.teacher-card-view .avatar {
+  width: 96px; height: 96px; border-radius: 50%;
+  margin: 0 auto 14px; overflow: hidden;
+  border: 2.5px solid var(--blue-400);
+  box-shadow: 0 0 0 5px rgba(59,130,246,0.1);
+  background: var(--navy-700); display: grid; place-items: center;
+}
+.teacher-card-view .avatar img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.teacher-card-view .avatar .no-photo { color: var(--text-muted); }
+.teacher-card-view .avatar .no-photo svg { width: 38px; height: 38px; }
+.teacher-card-view .t-name {
+  font-family: 'Outfit', sans-serif; font-size: 0.92rem;
+  font-weight: 600; color: var(--text-primary);
+  word-break: break-word; margin-bottom: 6px;
+}
+.teacher-card-view .t-link-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 0.7rem; color: var(--blue-300); font-weight: 500;
+  background: rgba(37,99,235,0.1); padding: 3px 10px; border-radius: 100px;
+}
+.teacher-card-view .t-link-tag svg { width: 11px; height: 11px; }
+
+/* === ADMIN PAGE === */
+.header-admin {
+  padding: 44px 24px 32px; text-align: center; position: relative;
+}
+.header-admin::after {
+  content: ''; position: absolute; bottom: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 120px; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--yellow-400), transparent);
+}
+.header-admin h1 {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 800;
+  letter-spacing: -0.5px; line-height: 1.15;
+  background: linear-gradient(135deg, var(--white) 0%, var(--yellow-300) 50%, var(--yellow-400) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: fadeDown 0.6s ease 0.1s both;
+}
+.header-admin p {
+  margin-top: 12px; color: var(--text-secondary);
+  font-size: 0.95rem; max-width: 520px;
+  margin-left: auto; margin-right: auto; line-height: 1.6;
+  animation: fadeDown 0.6s ease 0.2s both;
+}
+.section-title .icon-circle.yellow {
+  background: linear-gradient(135deg, #b45309, #d97706);
+  box-shadow: 0 2px 12px rgba(217,119,6,0.35);
+}
+.count-badge-admin {
+  background: rgba(234,179,8,0.12); border: 1px solid rgba(234,179,8,0.2);
+  color: #fbbf24; font-size: 0.72rem; font-weight: 600;
+  padding: 3px 10px; border-radius: 100px;
+}
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group.full { grid-column: 1 / -1; }
+.form-group label {
+  font-size: 0.8rem; font-weight: 500;
+  color: var(--text-secondary); text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.form-group input {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px; color: var(--text-primary);
+  font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+.form-group input:focus {
+  border-color: var(--blue-400);
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+}
+.form-group input::placeholder { color: var(--text-muted); }
+
+/* Photo upload */
+.photo-upload-area {
+  display: flex; align-items: center; gap: 16px;
+  padding: 12px; border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.03);
+  border: 1px dashed var(--glass-border);
+  transition: border-color 0.2s;
+}
+.photo-upload-area:hover { border-color: var(--blue-400); }
+.photo-upload-area .photo-preview {
+  width: 64px; height: 64px; border-radius: 50%;
+  overflow: hidden; border: 2px solid var(--blue-400);
+  background: var(--navy-700); display: grid; place-items: center;
+  flex-shrink: 0;
+}
+.photo-upload-area .photo-preview img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.photo-upload-area .photo-preview svg { width: 26px; height: 26px; color: var(--text-muted); }
+.photo-upload-area .photo-upload-info { flex: 1; min-width: 0; }
+.photo-upload-area .photo-upload-info .file-name {
+  font-size: 0.82rem; color: var(--text-primary); font-weight: 500;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin-bottom: 6px;
+}
+.photo-upload-area .photo-upload-info .file-name.empty { color: var(--text-muted); font-weight: 400; }
+.photo-upload-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: 8px;
+  background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2);
+  color: var(--blue-300); font-size: 0.78rem; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+  font-family: 'DM Sans', sans-serif;
+}
+.photo-upload-btn:hover { background: rgba(59,130,246,0.2); }
+.photo-upload-btn svg { width: 14px; height: 14px; }
+.photo-upload-btn input[type="file"] { display: none; }
+.photo-remove-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2);
+  color: var(--red-400); cursor: pointer; transition: all 0.2s;
+  flex-shrink: 0;
+}
+.photo-remove-btn:hover { background: rgba(239,68,68,0.2); }
+.photo-remove-btn svg { width: 14px; height: 14px; }
+
+.form-actions {
+  grid-column: 1 / -1;
+  display: flex; gap: 10px; margin-top: 8px;
+}
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 20px; border-radius: var(--radius-sm);
+  font-family: 'DM Sans', sans-serif; font-size: 0.85rem;
+  font-weight: 600; border: none; cursor: pointer;
+  transition: all 0.2s; text-decoration: none;
+}
+.btn svg { width: 16px; height: 16px; }
+.btn-primary {
+  background: linear-gradient(135deg, var(--blue-600), var(--blue-400));
+  color: white; box-shadow: 0 2px 12px rgba(37,99,235,0.3);
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(37,99,235,0.4); }
+.btn-cancel {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+}
+.btn-cancel:hover { background: rgba(255,255,255,0.1); color: var(--text-primary); }
+.btn-danger {
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.2);
+  color: var(--red-400);
+  padding: 6px 12px; font-size: 0.78rem;
+}
+.btn-danger:hover { background: rgba(239,68,68,0.2); }
+.btn-edit {
+  background: rgba(59,130,246,0.1);
+  border: 1px solid rgba(59,130,246,0.2);
+  color: var(--blue-300);
+  padding: 6px 12px; font-size: 0.78rem;
+}
+.btn-edit:hover { background: rgba(59,130,246,0.2); }
+.teacher-list { display: flex; flex-direction: column; gap: 12px; }
+.teacher-row {
+  display: flex; align-items: center; gap: 16px;
+  background: var(--glass); border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm); padding: 16px 20px;
+  transition: border-color 0.3s;
+}
+.teacher-row:hover { border-color: rgba(255,255,255,0.15); }
+.teacher-row .t-avatar {
+  width: 48px; height: 48px; border-radius: 50%;
+  overflow: hidden; border: 2px solid var(--blue-400);
+  background: var(--navy-700); display: grid; place-items: center;
+  flex-shrink: 0;
+}
+.teacher-row .t-avatar img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.teacher-row .t-avatar svg { width: 22px; height: 22px; color: var(--text-muted); }
+.teacher-row .t-info { flex: 1; min-width: 0; }
+.teacher-row .t-info .t-name {
+  font-family: 'Outfit', sans-serif; font-weight: 600;
+  font-size: 0.95rem; color: var(--text-primary);
+}
+.teacher-row .t-info .t-link-text {
+  font-size: 0.78rem; color: var(--text-muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.teacher-row .t-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.toast {
+  position: fixed; bottom: 24px; right: 24px; z-index: 200;
+  background: var(--navy-800); border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm); padding: 14px 20px;
+  color: var(--text-primary); font-size: 0.85rem; font-weight: 500;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  transform: translateY(100px); opacity: 0;
+  transition: all 0.3s ease;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { border-color: rgba(34,197,94,0.3); }
+.toast.error { border-color: rgba(239,68,68,0.3); }
+
+/* === SHARED === */
+.empty-state {
+  text-align: center; padding: 40px 20px;
+  color: var(--text-muted); font-size: 0.88rem;
+}
+.empty-state svg { width: 48px; height: 48px; margin-bottom: 14px; opacity: 0.3; }
+.empty-state p { font-size: 0.84rem; margin-top: 4px; }
+
+/* === ANIMATIONS === */
+@keyframes fadeDown { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+/* === RESPONSIVE === */
+@media (max-width: 600px) {
+  .teacher-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px; }
+  .glass-card { padding: 18px; }
+  .navbar-brand span { display: none; }
+  .form-grid { grid-template-columns: 1fr; }
+  .teacher-row { flex-wrap: wrap; }
+  .teacher-row .t-actions { width: 100%; justify-content: flex-end; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="#" class="navbar-brand" onclick="return false;">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 4 3 6 3s6-1 6-3v-5"/></svg>
+        </div>
+        <span>PEI</span>
+      </a>
+      <div class="navbar-menu">
+        <a href="#" class="nav-link active" data-page="home" onclick="return false;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Inicio
+        </a>
+        <a href="#" class="nav-link admin-link" data-page="admin" onclick="return false;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Admin
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- PAGE: Home -->
+  <div class="page active" id="page-home">
+    <header class="header">
+      <h1>Plano Educacional<br>Individualizado — PEI</h1>
+      <p>Ferramenta para organização e acompanhamento do plano educacional personalizado dos estudantes.</p>
+    </header>
+    <div class="container">
+      <section class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <div class="icon-circle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            Professores
+          </div>
+          <span class="count-badge" id="countBadge">0 professores</span>
+        </div>
+        <div class="glass-card">
+          <div class="teacher-grid" id="teacherGrid">
+            <div class="empty-state" id="emptyDisplay">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              <p>Nenhum professor cadastrado</p>
+              <p style="margin-top:8px;font-size:0.78rem;">Acesse o painel <strong style="color:#fbbf24;">Admin</strong> para adicionar.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- PAGE: Admin -->
+  <div class="page" id="page-admin">
+    <header class="header-admin">
+      <h1>Painel Administrativo</h1>
+      <p>Gerencie os professores cadastrados no sistema PEI.</p>
+    </header>
+    <div class="container">
+      <section class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <div class="icon-circle yellow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+            </div>
+            <span id="formTitle">Adicionar Professor</span>
+          </div>
+        </div>
+        <div class="glass-card">
+          <form id="teacherForm" class="form-grid">
+            <input type="hidden" id="editId" value="">
+            <div class="form-group">
+              <label for="inputName">Nome</label>
+              <input type="text" id="inputName" placeholder="Nome do professor" required>
+            </div>
+            <div class="form-group">
+              <label>Foto do Professor</label>
+              <div class="photo-upload-area">
+                <div class="photo-preview" id="photoPreview">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </div>
+                <div class="photo-upload-info">
+                  <div class="file-name empty" id="fileName">Nenhuma foto selecionada</div>
+                  <label class="photo-upload-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    Escolher Foto
+                    <input type="file" id="inputPhoto" accept="image/*">
+                  </label>
+                </div>
+                <button type="button" class="photo-remove-btn" id="btnRemovePhoto" style="display:none;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="form-group full">
+              <label for="inputLink">Link do Perfil</label>
+              <input type="url" id="inputLink" placeholder="https://exemplo.com/perfil">
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary" id="btnSubmit">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                <span id="btnSubmitText">Adicionar</span>
+              </button>
+              <button type="button" class="btn btn-cancel" id="btnCancel" style="display:none;">Cancelar</button>
+            </div>
+          </form>
+        </div>
+      </section>
+      <section class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <div class="icon-circle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            Professores Cadastrados
+          </div>
+          <span class="count-badge-admin" id="countBadgeAdmin">0 professores</span>
+        </div>
+        <div class="glass-card">
+          <div class="teacher-list" id="teacherList">
+            <div class="empty-state" id="emptyDisplayAdmin">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              <p>Nenhum professor cadastrado</p>
+              <p style="margin-top:8px;font-size:0.78rem;">Use o formulario acima para adicionar.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <div class="toast" id="toast"></div>
+    </div>
+  </div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+import {
+    getDatabase, ref, get, set, push, update, remove
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+
+// ── Firebase Init ──
+const firebaseConfig = {
+  apiKey: "AIzaSyBw9DYOu9-6vp7-XpOogV0fG0K9Dz4P-jE",
+  authDomain: "paginapei-a1578.firebaseapp.com",
+  databaseURL: "https://paginapei-a1578-default-rtdb.firebaseio.com",
+  projectId: "paginapei-a1578",
+  storageBucket: "paginapei-a1578.firebasestorage.app",
+  messagingSenderId: "342636607061",
+  appId: "1:342636607061:web:a6632a57037abbff6d06dc",
+  measurementId: "G-EWPXK7E3NK"
+};
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// ── Page Navigation ──
+const navLinks = document.querySelectorAll('.nav-link[data-page]');
+const pages = document.querySelectorAll('.page');
+
+function navigateTo(pageId) {
+  pages.forEach(p => p.classList.remove('active'));
+  navLinks.forEach(l => l.classList.remove('active'));
+  document.getElementById('page-' + pageId).classList.add('active');
+  document.querySelector('[data-page="' + pageId + '"]').classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (pageId === 'home') renderHome();
+  if (pageId === 'admin') renderAdmin();
+}
+
+navLinks.forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    navigateTo(link.dataset.page);
+  });
+});
+
+// ── Firebase helpers ──
+async function loadTeachersObj() {
+  const snapshot = await get(ref(db, "teachers"));
+  if (snapshot.exists()) return snapshot.val();
+  return {};
+}
+
+// ══════════════════════════════════════
+// HOME PAGE — render teacher cards
+// ══════════════════════════════════════
+async function renderHome() {
+  const obj = await loadTeachersObj();
+  const teachers = Object.values(obj);
+  const grid = document.getElementById('teacherGrid');
+  const empty = document.getElementById('emptyDisplay');
+
+  grid.querySelectorAll('.teacher-card-view').forEach(el => el.remove());
+
+  if (teachers.length === 0) {
+    empty.style.display = 'block';
+  } else {
+    empty.style.display = 'none';
+    teachers.forEach((t, i) => {
+      const card = document.createElement('a');
+      card.className = 'teacher-card-view';
+      card.style.animation = 'fadeUp 0.4s ease ' + (i * 0.06) + 's both';
+      if (t.link) {
+        card.href = t.link;
+        card.target = '_blank';
+        card.rel = 'noopener';
+      } else {
+        card.href = 'javascript:void(0)';
+        card.style.cursor = 'default';
+      }
+      card.innerHTML =
+        '<div class="avatar">' +
+          (t.photo
+            ? '<img src="' + t.photo + '" alt="' + t.name + '">'
+            : '<div class="no-photo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>') +
+        '</div>' +
+        '<div class="t-name">' + t.name + '</div>' +
+        (t.link
+          ? '<span class="t-link-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Acessar perfil</span>'
+          : '');
+      grid.appendChild(card);
+    });
+  }
+
+  const n = teachers.length;
+  document.getElementById('countBadge').textContent =
+    n === 1 ? '1 professor' : n + ' professores';
+}
+
+// ══════════════════════════════════════
+// ADMIN PAGE — CRUD
+// ══════════════════════════════════════
+const form = document.getElementById('teacherForm');
+const editIdInput = document.getElementById('editId');
+const inputName = document.getElementById('inputName');
+const inputPhoto = document.getElementById('inputPhoto');
+const inputLink = document.getElementById('inputLink');
+const photoPreview = document.getElementById('photoPreview');
+const fileName = document.getElementById('fileName');
+const btnRemovePhoto = document.getElementById('btnRemovePhoto');
+const formTitle = document.getElementById('formTitle');
+const btnSubmitText = document.getElementById('btnSubmitText');
+const btnCancel = document.getElementById('btnCancel');
+const teacherList = document.getElementById('teacherList');
+const emptyAdmin = document.getElementById('emptyDisplayAdmin');
+const countBadgeAdmin = document.getElementById('countBadgeAdmin');
+const toastEl = document.getElementById('toast');
+
+let currentPhotoData = '';
+
+function showToast(msg, type = 'success') {
+  toastEl.textContent = msg;
+  toastEl.className = 'toast ' + type + ' show';
+  setTimeout(() => { toastEl.className = 'toast'; }, 3000);
+}
+
+function resetForm() {
+  editIdInput.value = '';
+  inputName.value = '';
+  inputPhoto.value = '';
+  inputLink.value = '';
+  currentPhotoData = '';
+  photoPreview.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+  fileName.textContent = 'Nenhuma foto selecionada';
+  fileName.classList.add('empty');
+  btnRemovePhoto.style.display = 'none';
+  formTitle.textContent = 'Adicionar Professor';
+  btnSubmitText.textContent = 'Adicionar';
+  btnCancel.style.display = 'none';
+}
+
+inputPhoto.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  
+  if (file.size > 5 * 1024 * 1024) {
+    showToast('Imagem muito grande. Maximo 5MB.', 'error');
+    inputPhoto.value = '';
+    return;
+  }
+  
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    currentPhotoData = e.target.result;
+    photoPreview.innerHTML = '<img src="' + currentPhotoData + '" alt="Preview">';
+    fileName.textContent = file.name;
+    fileName.classList.remove('empty');
+    btnRemovePhoto.style.display = 'flex';
+  };
+  reader.readAsDataURL(file);
+});
+
+btnRemovePhoto.addEventListener('click', () => {
+  inputPhoto.value = '';
+  currentPhotoData = '';
+  photoPreview.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+  fileName.textContent = 'Nenhuma foto selecionada';
+  fileName.classList.add('empty');
+  btnRemovePhoto.style.display = 'none';
+});
+
+btnCancel.addEventListener('click', resetForm);
+
+async function renderAdmin() {
+  const obj = await loadTeachersObj();
+  const entries = Object.entries(obj);
+
+  teacherList.querySelectorAll('.teacher-row').forEach(el => el.remove());
+
+  if (entries.length === 0) {
+    emptyAdmin.style.display = 'block';
+  } else {
+    emptyAdmin.style.display = 'none';
+    entries.forEach(([key, t], i) => {
+      const row = document.createElement('div');
+      row.className = 'teacher-row';
+      row.style.animation = 'fadeUp 0.4s ease ' + (i * 0.06) + 's both';
+      row.innerHTML =
+        '<div class="t-avatar">' +
+          (t.photo
+            ? '<img src="' + t.photo + '" alt="' + t.name + '">'
+            : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>') +
+        '</div>' +
+        '<div class="t-info">' +
+          '<div class="t-name">' + t.name + '</div>' +
+          (t.link ? '<div class="t-link-text">' + t.link + '</div>' : '') +
+        '</div>' +
+        '<div class="t-actions">' +
+          '<button class="btn btn-edit" data-key="' + key + '" data-action="edit">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>' +
+            'Editar' +
+          '</button>' +
+          '<button class="btn btn-danger" data-key="' + key + '" data-action="delete">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>' +
+            'Excluir' +
+          '</button>' +
+        '</div>';
+      teacherList.appendChild(row);
+    });
+  }
+
+  const n = entries.length;
+  countBadgeAdmin.textContent = n === 1 ? '1 professor' : n + ' professores';
+}
+
+// Edit / Delete clicks
+teacherList.addEventListener('click', async (e) => {
+  const btn = e.target.closest('[data-action]');
+  if (!btn) return;
+  const key = btn.dataset.key;
+  const action = btn.dataset.action;
+
+  if (action === 'delete') {
+    if (!confirm('Tem certeza que deseja excluir este professor?')) return;
+    try {
+      await remove(ref(db, 'teachers/' + key));
+      showToast('Professor excluido com sucesso!');
+      renderAdmin();
+    } catch (err) {
+      showToast('Erro ao excluir: ' + err.message, 'error');
+    }
+  }
+
+  if (action === 'edit') {
+    const snapshot = await get(ref(db, 'teachers/' + key));
+    if (snapshot.exists()) {
+      const t = snapshot.val();
+      editIdInput.value = key;
+      inputName.value = t.name || '';
+      inputLink.value = t.link || '';
+      currentPhotoData = t.photo || '';
+      if (currentPhotoData) {
+        photoPreview.innerHTML = '<img src="' + currentPhotoData + '" alt="' + t.name + '">';
+        fileName.textContent = 'Foto atual';
+        fileName.classList.remove('empty');
+        btnRemovePhoto.style.display = 'flex';
+      } else {
+        photoPreview.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+        fileName.textContent = 'Nenhuma foto selecionada';
+        fileName.classList.add('empty');
+        btnRemovePhoto.style.display = 'none';
+      }
+      formTitle.textContent = 'Editar Professor';
+      btnSubmitText.textContent = 'Salvar Alteracoes';
+      btnCancel.style.display = 'inline-flex';
+      inputName.focus();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+});
+
+// Form submit
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const name = inputName.value.trim();
+  const photo = currentPhotoData;
+  const link = inputLink.value.trim();
+  const editKey = editIdInput.value;
+
+  if (!name) { showToast('Informe o nome do professor.', 'error'); return; }
+
+  try {
+    if (editKey) {
+      await update(ref(db, 'teachers/' + editKey), { name, photo, link });
+      showToast('Professor atualizado com sucesso!');
+    } else {
+      const newRef = push(ref(db, 'teachers'));
+      await set(newRef, { name, photo, link });
+      showToast('Professor adicionado com sucesso!');
+    }
+    resetForm();
+    renderAdmin();
+  } catch (err) {
+    showToast('Erro: ' + err.message, 'error');
+  }
+});
+
+// ── Initial render ──
+renderHome();
+</script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"75124c326cb447fe934cde04713ae013","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
