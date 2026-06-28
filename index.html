@@ -384,7 +384,19 @@ body::after {
 <script>
 
 async function render() {
-  const teachers = loadTeachers();
+  async function loadTeachers(){
+
+    const snapshot = await get(ref(db,"teachers"));
+
+    if(snapshot.exists()){
+
+        return Object.values(snapshot.val());
+
+    }
+
+    return [];
+
+}
   const grid = document.getElementById('teacherGrid');
   const empty = document.getElementById('emptyDisplay');
 
