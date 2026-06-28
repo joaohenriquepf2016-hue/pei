@@ -428,6 +428,17 @@ async function render() {
 render();
 </script>
 <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+
+import {
+    getDatabase,
+    ref,
+    get,
+    set,
+    push,
+    update,
+    remove
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
 const firebaseConfig = {
   apiKey: "AIzaSyBw9DYOu9-6vp7-XpOogV0fG0K9Dz4P-jE",
   authDomain: "paginapei-a1578.firebaseapp.com",
